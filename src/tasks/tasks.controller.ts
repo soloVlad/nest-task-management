@@ -10,50 +10,40 @@ import {
 } from '@nestjs/common';
 
 import { TasksService } from './tasks.service';
-import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-import { updateTaskStatusDto } from './dto/update-task-status.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { Task } from './task.entity';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
-  // @Get()
-  // getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
-  //   if (Object.keys(filterDto).length) {
-  //     this.tasksService.getTasksWithFilters(filterDto);
-  //   }
-
-  //   return this.tasksService.getAllTasks();
-  // }
+  @Get()
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto);
+  }
 
   @Get('/:id')
   getTaskById(@Param('id') id: string): Promise<Task> {
     return this.tasksService.getTaskById(id);
   }
 
-  // @Get('/:id')
-  // getTaskById(@Param('id') id: string): Task {
-  //   return this.tasksService.getTaskById(id);
-  // }
+  @Post()
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto);
+  }
 
-  // @Post()
-  // createTask(@Body() createTaskDto: CreateTaskDto): Task {
-  //   return this.tasksService.createTask(createTaskDto);
-  // }
+  @Patch('/:id/status')
+  updateTaskStatus(
+    @Param('id') id: string,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
+  ): Promise<Task> {
+    return this.tasksService.updateTaskStatus(id, updateTaskStatusDto.status);
+  }
 
-  // @Patch('/:id/status')
-  // updateTaskStatus(
-  //   @Param('id') id: string,
-  //   @Body() updateTaskStatusDto: updateTaskStatusDto,
-  // ): Task {
-  //   return this.tasksService.updateTaskStatus(id, updateTaskStatusDto);
-  // }
-
-  // @Delete('/:id')
-  // removeTaskById(@Param('id') id: string): void {
-  //   return this.tasksService.deleteTask(id);
-  // }
+  @Delete('/:id')
+  removeTaskById(@Param('id') id: string): Promise<void> {
+    return this.tasksService.deleteTask(id);
+  }
 }
